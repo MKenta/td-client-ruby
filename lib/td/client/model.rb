@@ -275,23 +275,26 @@ class Schema
   class Field
     # @param [String] name
     # @param [String] type
-    def initialize(name, type)
+    # @param [String] aka
+    def initialize(name, type, aka=nil)
       @name = name
       @type = type
+      @alias = aka
     end
 
     # @!attribute [r] name
     # @!attribute [r] type
     attr_reader :name
     attr_reader :type
+    attr_reader :alias
   end
 
   # @param [String] cols
   # @return [Schema]
   def self.parse(cols)
     fields = cols.split(',').map {|col|
-      name, type, *_ = col.split(':')
-      Field.new(name, type)
+      name, type, aka, *_ = col.split(':')
+      Field.new(name, type, aka)
     }
     Schema.new(fields)
   end
