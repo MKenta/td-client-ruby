@@ -330,14 +330,14 @@ class Schema
 
   # @return [Array<Field>]
   def to_json(*args)
-    @fields.map {|f| [f.name, f.type] }.to_json(*args)
+    @fields.map {|f| f.alias ? [f.name, f.type] : [f.name, f.type, f.alias] }.to_json(*args)
   end
 
   # @param [Object] obj
   # @return [self]
   def from_json(obj)
     @fields = obj.map {|f|
-      Field.new(f[0], f[1])
+      Field.new(*f)
     }
     self
   end
