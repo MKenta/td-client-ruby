@@ -607,18 +607,16 @@ private
   end
 
   def parse_error_response(res)
-    error = {}
-
     begin
-      js = JSON.load(res.body)
-      if js.nil?
-        error['message'] = res.reason
-      else
-        error['message']    = js['message'] || js['error']
+      if js = JSON.load(res.body)
+        error = js
+        error['message']    = js['error'] unless js['message']
         error['stacktrace'] = js['stacktrace']
+      else
+        error = {'message' => res.reason}
       end
     rescue JSON::ParserError
-      error['message'] = res.body
+      error = {'message' => res.body}
     end
 
     error
@@ -640,6 +638,7 @@ private
       when "404"
         NotFoundError
       when "409"
+        message = "#{message}: conflicts_with job:#{error["details"]["conflicts_with"]}" if error["details"] && error["details"]["conflicts_with"]
         AlreadyExistsError
       when "401"
         AuthError
@@ -651,11 +650,15 @@ private
       end
     end
 
-    if error_class.method_defined?(:api_backtrace)
-      raise error_class.new(message, error['stacktrace'])
+    exc = nil
+    if error_class.method_defined?(:conflicts_with)
+      exc = error_class.new(message, error['stacktrace'], error["details"]["conflicts_with"])
+    elsif error_class.method_defined?(:api_backtrace)
+      exc = error_class.new(message, error['stacktrace'])
     else
-      raise error_class, message
+      exc = error_class.new(message)
     end
+    raise exc
   end
 
   if ''.respond_to?(:encode)
