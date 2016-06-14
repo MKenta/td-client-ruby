@@ -164,8 +164,7 @@ Although we are trying to keep 1.8.7 compatibility as you can see it in
 .travis.yml we don't officially support 1.8.7. The most important defect
 on 1.8 is it does not support TLS only SSL endpoint.
 
-## Copyright
+## More Information
 
-|Copyright | Copyright (c) 2011 Treasure Data Inc. |
-|:--|:--|
-|License|   Apache License, Version 2.0 |
+  * Copyright: (c) 2011 Treasure Data Inc.
+  * License: Apache License, Version 2.0
